@@ -1,0 +1,349 @@
+@startuml
+skinparam classAttributeIconSize 0
+hide circle
+
+
+namespace DSALinkedList{
+
+
+class DSAListNode {
+    - key: any
+    - prev: DSAListNode
+    - next: DSAListNode
+}
+
+class DSALinkedList {
+    - head: DSAListNode
+    - tail: DSAListNode
+    - size: int
+    + getCount(): int
+    + hasKey(key: any): bool
+    + isEmpty(): bool
+    + isNotEmpty(): bool
+    + insertFirst(key: any)
+    + insertLast(key: any)
+    + peekFirst(): any
+    + peekLast(): any
+    + removeFirst(): any
+    + removeLast(): any
+    + clear()
+    + append(key: any)
+    + pop()
+    + index(key: any): int
+    + LastIndex(key: any): int
+    + remove(key: any)
+}
+
+class UniqueLinkedList extends DSALinkedList {
+    + add(key: any): bool
+
+}
+
+class CycleCounter extends DSALinkedList {
+    + add(key: any)
+    + getCount(): int
+    + GetDirectCycle(): int
+    + GetIndirectCycle(): int
+}
+
+class ListObjectNode {
+    - val: string
+    - key: any
+    - prev: ListObjectNode
+    - next: ListObjectNode
+
+}
+
+class SortedLinkedList extends DSALinkedList {
+    + insertSorted(val: string, key: any)
+}
+
+class UniqueSortedLinkedList  extends SortedLinkedList  {
+    + add(val: string, key: any): bool
+}
+
+
+class DSAPath extends DSALinkedList {
+}
+
+
+DSALinkedList "0...*" o--> DSAListNode
+SortedLinkedList "0...*" o--> ListObjectNode
+}
+
+
+
+namespace DSATree{
+class DSANode {
+  - key: any
+  - parent: DSANode
+  - left: DSANode
+  - right: DSANode
+  - colour: bool
+}
+
+class DSAVertexNode {
+  - outgoingEdges: SortedLinkedList
+  - incomingEdges: SortedLinkedList
+  + linkTo(edge: obj)
+  + linkFrom(edge: obj)
+}
+
+class DSATree {
+  - NIL: DSANode
+  - root: DSANode
+  - count: int
+  - _inorderTraversal()
+  + insert(key: any)
+  - _insert()
+  - _rebalance()
+  - _leftRight()
+  - _rightLeft()
+  + find(key: any): any
+  + getCount(): int
+  + getHeight(): int
+}
+
+DSATree "0...*" o--> DSANode
+DSANode <|-- DSAVertexNode
+
+}
+
+
+
+
+
+namespace DSAGraph{
+    class DSAVertex {
+  - label: any
+  - outgoingEdges: SortedLinkedList
+  - incomingEdges: SortedLinkedList
+  + linkTo(edge: obj)
+  + linkFrom(edge: obj)
+}
+
+class DSAEdge {
+  - start: obj
+  - end: obj
+  - label: any
+}
+
+class DSAGraph {
+  - count: int
+  - cycle: CycleCounter
+  - vertices: SortedLinkedList
+  + addVertex(obj)
+  + addEdge(star: obj, end: obj, label: any)
+  + getVertex(): any
+  - _dfsCountCycles()
+  + countCycles(): int
+}
+
+DSAGraph *--> CycleCounter
+DSAGraph "0...*" o--> DSAVertex
+DSAVertex "0...*" o--> DSAEdge
+
+}
+
+namespace AcademicTree{
+
+class Unit extends DSATree.DSANode{
+  - code: string
+  - name: string
+  - stage: string
+  - link: string
+  - tutorships: SortedLinkedList
+}
+
+class Student extends DSATree.DSAVertexNode {
+  - ID: int
+  - name: string
+  - enroll: UniqueSortedLinkedList
+  - tutoring: prt
+  - tutored: prt
+  + enrolling(unit: Unit)
+  + linkTo(edge: Tutorship)
+  + linkFrom(edge: Tutorship)
+}
+
+class UnitTree extends DSATree.DSATree{
+  + insert(unit: Unit)
+}
+
+class StudentTree extends DSATree.DSATree{
+  + insert(stu_onj: Student)
+}
+
+StudentTree "0...*" o--> Student
+UnitTree "0...*" o--> Unit
+
+}
+
+
+
+
+
+
+
+
+
+
+namespace AcademicDatabase{
+
+class Tutorship{
+  - tutor: prt
+  - tutee: prt
+  - uni: prt
+}
+
+class AcademicDatabase {
+  - students: StudentTree
+  - units: UnitTree
+  - tutors: UniqueSortedLinkedList
+  - tutees: UniqueSortedLinkedList
+  - enabledUnit: UniqueSortedLinkedList
+  - advanced: bool
+  - count: int
+  - cycle: CycleCounter
+
+  + debugMode()
+  + addTutorship(tutorship: Tutorship)
+  - _divisionHandler(): float
+  + getTutor2Unit(): float
+  + getTutor2Tutee(): float
+  + getTutor2Eunit(): float
+  + getCount(): int
+  + getUnit(code: string): Unit
+  + getStudent(ID: int): Student
+  + getStudentByName(name: string): Student
+  - _dfsCountCycle()
+  - _countCycle(): int
+  + getDirectCycle(): int
+  + getIndirectCycle(): int
+  + getCycle(): int
+  + clearCycleDate()
+}
+
+
+
+
+
+
+
+AcademicTree.Student "0...*" o--> Tutorship
+Tutorship <-- AcademicTree.Unit
+AcademicDatabase --|> DSAGraph.DSAGraph
+Tutorship --|> DSAGraph.DSAEdge
+AcademicDatabase o--> AcademicTree.StudentTree
+AcademicDatabase o--> AcademicTree.UnitTree
+AcademicDatabase *--> DSALinkedList.CycleCounter
+
+}
+
+
+
+namespace FileIO {
+    class FileIO {
+  - studentFile: string
+  - unitFile: string
+  - netFile: string
+  - database: AcademicDatabase
+  + getData(): AcademicDatabase
+  + readCSV()
+  + writeSerialized(filePath: string)
+  + readSerialized(filePath: string)
+  + accessDatabase(): AcademicDatabase
+  + clearData()
+}
+}
+
+AcademicDatabase.AcademicDatabase <--o FileIO.FileIO
+
+namespace MenuFileIO{
+    class MenuFileIO extends FileIO.FileIO{
+    + menu()
+    - _directing(choice: int)
+    - _exitting()
+    - _plash()
+    - _enterFileName()
+    - _showOptions()
+    - _getChoice()
+    - rangeInError()
+    - typeInError()
+    - _loadCsv(stu: str, uni: str, net: str)
+    - _loadSer()
+    - _SaveSer()
+    - _findStudent(): Student
+    - _findUnit(): Unit
+    - _findTutoring(stu_onj: Student)
+    - _findEnrolled(unit_obj: Unit)
+    - _studentDetail(stu_onj: Student)
+    - _enrolledDetail(unit_obj: Unit)
+    - _unitDetail(unit_obj Unit)
+    - _tutorshipDetail(stu_onj: Student)
+    - _statistics()
+}
+
+
+}
+
+
+
+
+
+namespace StudyHelp{
+
+
+class StudyHelp {
+  - advanced: bool
+  - usage: str
+  + printUsage()
+  + interactiveMode()
+  + reportMode(student: str, unit: str, network: str)
+  + run()
+}
+
+StudyHelp --|> MenuFileIO.MenuFileIO
+
+
+}
+
+namespace testHarness{
+class Demonstration {
+  - index: int
+  - welcome: str
+  - notice: str
+
+  - _loadCsv(stu: str, uni: str, net: str)
+  + findStudent(str)
+  + findTutoring(str)
+  + findUnit(str)
+  + findEnrolled(str)
+  + getChoice(): int
+  + loadSer()
+  + SaveSer()
+}
+
+Demonstration --|> StudyHelp.StudyHelp
+
+}
+
+
+namespace trickyEntryFinder{
+class trickyEntryFinder {
+    - students: pointer
+    - complexCases: SortedLinkedList
+    - getPeerCount(stu_obj: Student): UniqueLinkedList
+    - getStuCount(unit_obj: Unit): UniqueLinkedList
+}
+
+trickyEntryFinder --> FileIO.FileIO
+
+}
+
+
+
+
+
+
+@enduml
